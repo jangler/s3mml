@@ -41,7 +41,7 @@ def lenstr(notelen):
     while notelen >= 1:
         notelen -= 1
         lengths.append('16')
-    return '&&'.join(lengths)
+    return '&'.join(lengths)
 
 
 with open(sys.argv[1], 'rb') as f:
