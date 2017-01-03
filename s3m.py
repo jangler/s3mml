@@ -134,7 +134,7 @@ def write_cell(data, f):
         f.write(('%s%01d%02d' %
             (NOTE_NAMES[data[0] % 16], data[0]/16 + 1, data[1])).encode('ascii'))
     else:
-        f.write(b'===??')
+        f.write(b'===--')  # TODO: this could be other things. note cut?
 
     if data[2] == None:
         f.write(b'--')
@@ -144,4 +144,4 @@ def write_cell(data, f):
     if data[3] == None:
         f.write(b'.00')
     else:
-        f.write(('%01X%02X' % tuple(data[3:5])).encode('ascii'))
+        f.write(('%s%02X' % (chr(64 + data[3]), data[4])).encode('ascii'))
