@@ -84,6 +84,50 @@ def print_pattern(pattern):
     print()  # newline
 
 
+for i, inst in enumerate(module.instruments):
+    # nm alg fb
+    print('@%d 5 %d' % (i+1, inst.feedback))
+    # ar dr sr rr sl tl ks ml dt ams
+    # ar dr sr 0-31
+    # rr sl 0-15
+    # tl 0-127
+    # ks 0-3
+    # ml 0-15
+    # dt 0-7 (-3~+3)
+    # ams 0-1
+    print('%d %d %d %d %d %d %d %d %d %d' % (
+        inst.modulator.attack * 2,
+        inst.modulator.decay * 2,
+        0 if inst.modulator.sustainsound else inst.modulator.release,
+        inst.modulator.release,
+        15 - inst.modulator.sustain,
+        63 - inst.modulator.volume,
+        int(inst.modulator.scaleenv),
+        inst.modulator.freqmult,
+        0, 0,
+    ))
+    print('%d %d %d %d %d %d %d %d %d %d' % (
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # unused
+    ))
+    print('%d %d %d %d %d %d %d %d %d %d' % (
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # unused
+    ))
+    volmod = 0
+    if '[' in inst.title and ']' in inst.title:
+        volmod = int(inst.title[inst.title.index('[')+1:inst.title.index(']')])
+    print('%d %d %d %d %d %d %d %d %d %d' % (
+        inst.carrier.attack * 2,
+        inst.carrier.decay * 2,
+        0 if inst.carrier.sustainsound else inst.carrier.release,
+        inst.carrier.release,
+        15 - inst.carrier.sustain,
+        63 - inst.carrier.volume - volmod,
+        int(inst.carrier.scaleenv),
+        inst.carrier.freqmult,
+        0, 0,
+    ))
+    print()
+
 for order, pattern in enumerate(module.orderlist):
     if pattern < 255:
         print('; order %d, pattern %d' % (order, pattern))
