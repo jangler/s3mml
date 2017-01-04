@@ -12,6 +12,7 @@ def notestr(cell, prevcell, f):
     else:
         if prevcell == None or cell[1] != prevcell[1]:
             print('@%d' % cell[1], end='', file=f)
+            print('v15', end='', file=f)
         if cell[2] != None:
             if prevcell == None or prevcell[2] == None or \
                     cell[2] // (65/15) != prevcell[2] // (65/15):
@@ -115,16 +116,13 @@ for i, inst in enumerate(module.instruments):
     print('%d %d %d %d %d %d %d %d %d %d' % (
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # unused
     ))
-    volmod = 0
-    if '[' in inst.title and ']' in inst.title:
-        volmod = int(inst.title[inst.title.index('[')+1:inst.title.index(']')])
     print('%d %d %d %d %d %d %d %d %d %d' % (
         inst.carrier.attack * 2,
         inst.carrier.decay * 2,
         0 if inst.carrier.sustainsound else inst.carrier.release,
         inst.carrier.release,
         15 - inst.carrier.sustain,
-        63 - inst.carrier.volume - volmod,
+        63 - inst.carrier.volume,
         int(inst.carrier.scaleenv),
         inst.carrier.freqmult,
         0, 0,
