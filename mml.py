@@ -20,6 +20,8 @@ def notestr(cell, prevcell, f):
             print('v15', end='', file=f)
         if prevcell == None or cell[0] // 16 != prevcell[0] // 16:
             print('o%d' % (cell[0] // 16 + 1), end='', file=f)
+        if cell[3] != None and cell[3] == 7:
+            print('&', end='', file=f)  # Gxx
         print(NOTE_NAMES[cell[0] % 16], end='', file=f)
 
 
@@ -50,7 +52,8 @@ with open(sys.argv[1], 'rb') as f:
 print('#Title    %s' % module.title)
 print('#Filename .M2')
 
-print('\nABCDEFGHI t%d\n' % (module.initialtempo * 3 // module.initialspeed))
+print('\nABCDEFGHI t%d' % (module.initialtempo * 3 // module.initialspeed))
+
 
 def print_pattern(pattern):
     startrow, endrow = 0, -1  # Cxx stuff
