@@ -23,10 +23,7 @@ def notestr(cell, state):
             string += 'o%d' % (cell[0] // 16 + 1)
         if cell[3] == 7:
             string += '&'  # Gxx
-        if state[0] and not cell[0]:
-            string += '&' + NOTE_NAMES[state[0] % 16]
-        else:
-            string += NOTE_NAMES[cell[0] % 16]
+        string += NOTE_NAMES[cell[0] % 16]
     return string
 
 
@@ -71,16 +68,15 @@ def print_pattern(pattern):
             endrow = len(pattern)
         for i, row in enumerate(pattern[startrow:endrow]):
             cell = row[channel]
-            if cell:
-                if cell[0] != None and not cell[0] & 128 and cell[2] == None:
+            if cell and cell[0]:
+                if not cell[0] & 128 and cell[2] == None:
                     cell[2] = 64  # blank volume is max volume
                 if notelen != 0:
                     if not any(col for col in chanstate):
                         print('r', end='')
                     print(lenstr(notelen), end=' ')
                 print(notestr(cell, chanstate), end='')
-                if cell[0] != None and (chanstate[0] == None
-                        or not cell[0] & 128):
+                if chanstate[0] == None or not cell[0] & 128:
                     chanstate[0] = cell[0]
                 chanstate[1] = cell[1] or chanstate[1]
                 chanstate[2] = cell[2] if cell[2] != None else chanstate[2]
