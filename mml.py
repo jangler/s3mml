@@ -7,6 +7,11 @@ import s3m
 NOTE_NAMES = ('c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b')
 
 
+def linlog(vol):
+    # map linear volume 0-64 to log volume 0-15
+    return int(2.5 * math.log2(1+vol))
+
+
 def notestr(cell, state):
     # state is the current channel state, structured like the cell
     string = ''
@@ -16,9 +21,8 @@ def notestr(cell, state):
         if cell[1] and cell[1] != state[1]:
             string += '@%d' % cell[1]
         if cell[2] != None and (state[2] == None or
-                int(3.6 * math.log(1 + cell[2])) != \
-                        int(3.6 * math.log(1 + state[2]))):
-            string += 'v%d' % int(3.6 * math.log(1 + cell[2]))
+                linlog(cell[2]) != linlog(state[2])):
+            string += 'v%d' % linlog(cell[2])
         if cell[0] and (state[0] == None or cell[0] // 16 != state[0] // 16):
             string += 'o%d' % (cell[0] // 16 + 1)
         if cell[3] == 7:
