@@ -7,12 +7,12 @@ import s3m
 NOTE_NAMES = ('c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b')
 
 
-def linlog(vol):
+def linlog(vol, outrange=15):
     # map linear volume 0-64 to log volume 0-15
-    return int(2.5 * math.log2(1+vol))
+    return int(outrange/6 * math.log2(1+vol))
 
 
-def notestr(cell, state):
+def notestr(cell, state, ssg=False):
     # state is the current channel state, structured like the cell
     string = ''
     if cell[0] != None and cell[0] & 128:
@@ -20,9 +20,12 @@ def notestr(cell, state):
     else:
         if cell[1] and cell[1] != state[1]:
             string += '@%d' % cell[1]
+
+        volrange = 15 if ssg else 127
         if cell[2] != None and (state[2] == None or
-                linlog(cell[2]) != linlog(state[2])):
-            string += 'v%d' % linlog(cell[2])
+                linlog(cell[2], volrange) != linlog(state[2], volrange)):
+            string += 'V%d' % linlog(cell[2], volrange)
+
         if cell[0] and (state[0] == None or cell[0] // 16 != state[0] // 16):
             string += 'o%d' % (cell[0] // 16 + 1)
         if cell[3] == 7:
@@ -79,7 +82,8 @@ def print_pattern(pattern):
                     if not any(col for col in chanstate):
                         print('r', end='')
                     print(lenstr(notelen), end=' ')
-                print(notestr(cell, chanstate), end='')
+                ssg = channel in range(6, 9)
+                print(notestr(cell, chanstate, ssg), end='')
                 if chanstate[0] == None or not cell[0] & 128:
                     chanstate[0] = cell[0]
                 chanstate[1] = cell[1] or chanstate[1]
