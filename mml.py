@@ -1,3 +1,4 @@
+import math
 import sys
 
 import s3m
@@ -9,18 +10,23 @@ NOTE_NAMES = ('c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b')
 def notestr(cell, state):
     # state is the current channel state, structured like the cell
     string = ''
-    if cell[0] & 128:
+    if cell[0] != None and cell[0] & 128:
         string += 'r'
     else:
-        if cell[1] != state[1]:
+        if cell[1] and cell[1] != state[1]:
             string += '@%d' % cell[1]
-        if cell[2] != state[2]:
-            string += 'v%d' % (cell[2] // (64/15))
-        if state[0] == None or cell[0] // 16 != state[0] // 16:
+        if cell[2] != None and (state[0] == None or
+                int(3.6 * math.log(1 + cell[2])) != \
+                        int(3.6 * math.log(1 + state[2]))):
+            string += 'v%d' % int(3.6 * math.log(1 + cell[2]))
+        if cell[0] and (state[0] == None or cell[0] // 16 != state[0] // 16):
             string += 'o%d' % (cell[0] // 16 + 1)
         if cell[3] == 7:
             string += '&'  # Gxx
-        string += NOTE_NAMES[cell[0] % 16]
+        if state[0] and not cell[0]:
+            string += '&' + NOTE_NAMES[state[0] % 16]
+        else:
+            string += NOTE_NAMES[cell[0] % 16]
     return string
 
 
@@ -65,7 +71,7 @@ def print_pattern(pattern):
             endrow = len(pattern)
         for i, row in enumerate(pattern[startrow:endrow]):
             cell = row[channel]
-            if cell and cell[0]:
+            if cell:
                 if cell[0] != None and not cell[0] & 128 and cell[2] == None:
                     cell[2] = 64  # blank volume is max volume
                 if notelen != 0:
