@@ -6,24 +6,22 @@ import s3m
 NOTE_NAMES = ('c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b')
 
 
-def notestr(cell, prevcell, f):
+def notestr(cell, state):
+    # state is the current channel state, structured like the cell
+    string = ''
     if cell[0] & 128:
-        print('r', end='', file=f)
+        string += 'r'
     else:
-        if prevcell == None or cell[1] != prevcell[1]:
-            print('@%d' % cell[1], end='', file=f)
-            print('v15', end='', file=f)
-        if cell[2] != None:
-            if prevcell == None or prevcell[2] == None or \
-                    cell[2] // (65/15) != prevcell[2] // (65/15):
-                print('v%d' % (cell[2] // (65/15)), end='', file=f)
-        elif prevcell == None or (prevcell[2] != None):
-            print('v15', end='', file=f)
-        if prevcell == None or cell[0] // 16 != prevcell[0] // 16:
-            print('o%d' % (cell[0] // 16 + 1), end='', file=f)
-        if cell[3] != None and cell[3] == 7:
-            print('&', end='', file=f)  # Gxx
-        print(NOTE_NAMES[cell[0] % 16], end='', file=f)
+        if cell[1] != state[1]:
+            string += '@%d' % cell[1]
+        if cell[2] != state[2]:
+            string += 'v%d' % (cell[2] // (64/15))
+        if state[0] == None or cell[0] // 16 != state[0] // 16:
+            string += 'o%d' % (cell[0] // 16 + 1)
+        if cell[3] == 7:
+            string += '&'  # Gxx
+        string += NOTE_NAMES[cell[0] % 16]
+    return string
 
 
 def lenstr(notelen, sep='&'):
@@ -54,7 +52,7 @@ with open(sys.argv[1], 'rb') as f:
 print('#Title    %s' % module.title)
 print('#Filename .M2')
 
-print('\nABCDEFGHI t%d' % (module.initialtempo * 3 // module.initialspeed))
+print('\nABCDEFGHI t%d\n' % (module.initialtempo * 3 // module.initialspeed))
 
 
 def print_pattern(pattern):
@@ -62,18 +60,26 @@ def print_pattern(pattern):
     cxx = False
     for channel in range(9):
         print(chr(65 + channel), end=' ')
-        prevcell, notelen = None, 0
+        chanstate, notelen = [None, None, None, None, None], 0
         if endrow == -1:
             endrow = len(pattern)
         for i, row in enumerate(pattern[startrow:endrow]):
             cell = row[channel]
             if cell and cell[0]:
+                if cell[0] != None and not cell[0] & 128 and cell[2] == None:
+                    cell[2] = 64  # blank volume is max volume
                 if notelen != 0:
-                    if prevcell == None:
+                    if not any(col for col in chanstate):
                         print('r', end='')
                     print(lenstr(notelen), end=' ')
-                notestr(cell, prevcell, sys.stdout)
-                prevcell, notelen = cell, 0
+                print(notestr(cell, chanstate), end='')
+                if cell[0] != None and (chanstate[0] == None
+                        or not cell[0] & 128):
+                    chanstate[0] = cell[0]
+                chanstate[1] = cell[1] or chanstate[1]
+                chanstate[2] = cell[2] if cell[2] != None else chanstate[2]
+                chanstate[3], chanstate[4] = cell[3], cell[4]
+                notelen = 0
             notelen += 1
             if cell and cell[3]:
                 if cell[3] == 3:  # Cxx
@@ -82,9 +88,9 @@ def print_pattern(pattern):
         if not cxx:
             startrow, endrow = 0, -1
         if notelen != 0:
-            if prevcell == None:
+            if not any(col for col in chanstate):
                 print('r', end='')
-            print(lenstr(notelen), end=' ')
+            print(lenstr(notelen), end='')
         print() # newline
     print()  # newline
 
