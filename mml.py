@@ -105,6 +105,11 @@ def print_pattern(pattern):
     print()  # newline
 
 
+def envcurve(value, outrange=15):
+    # adjust envelope curves from opl2 to opna
+    return int(value**(3/4) * outrange/7.5)
+
+
 for i, inst in enumerate(module.instruments):
     # nm alg fb
     print('@%d 5 %d' % (i+1, inst.feedback))
@@ -117,11 +122,12 @@ for i, inst in enumerate(module.instruments):
     # dt 0-7 (-3~+3)
     # ams 0-1
     print('%d %d %d %d %d %d %d %d %d %d' % (
-        inst.modulator.attack * 2,
-        inst.modulator.decay * 2,
-        0 if inst.modulator.sustainsound else inst.modulator.release,
-        inst.modulator.release,
-        15 - inst.modulator.sustain,
+        envcurve(inst.modulator.attack, 31),
+        envcurve(inst.modulator.decay, 31),
+        0 if inst.modulator.sustainsound else \
+                envcurve(inst.modulator.release, 31),
+        envcurve(inst.modulator.release),
+        15 - envcurve(inst.modulator.sustain),
         63 - inst.modulator.volume,
         int(inst.modulator.scaleenv),
         inst.modulator.freqmult,
@@ -134,11 +140,12 @@ for i, inst in enumerate(module.instruments):
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # unused
     ))
     print('%d %d %d %d %d %d %d %d %d %d' % (
-        inst.carrier.attack * 2,
-        inst.carrier.decay * 2,
-        0 if inst.carrier.sustainsound else inst.carrier.release,
-        inst.carrier.release,
-        15 - inst.carrier.sustain,
+        envcurve(inst.carrier.attack, 31),
+        envcurve(inst.carrier.decay, 31),
+        0 if inst.carrier.sustainsound else \
+                envcurve(inst.carrier.release, 31),
+        envcurve(inst.carrier.release),
+        15 - envcurve(inst.carrier.sustain),
         63 - inst.carrier.volume,
         int(inst.carrier.scaleenv),
         inst.carrier.freqmult,
