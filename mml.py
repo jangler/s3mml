@@ -12,14 +12,25 @@ def linlog(vol, outrange=15):
     return int(outrange/6 * math.log2(1+vol))
 
 
-def notestr(cell, state, ssg=False):
+def notestr(cell, state, instruments, ssg=False):
     # state is the current channel state, structured like the cell
     string = ''
     if cell[0] != None and cell[0] & 128:
         string += 'r'
     else:
         if cell[1] and cell[1] != state[1]:
-            string += '@%d' % cell[1]
+            if ssg:
+                inst = instruments[cell[1]-1].carrier
+                string += 'E%d,%d,%d,%d,%d,%d' % (
+                    envcurve(inst.attack, 31),
+                    envcurve(inst.decay, 31),
+                    0 if inst.sustainsound else envcurve(inst.release, 31),
+                    envcurve(inst.release),
+                    15 - envcurve(inst.sustain),
+                    linlog(inst.volume),
+                )
+            else:
+                string += '@%d' % cell[1]
 
         volrange = 15 if ssg else 127
         if cell[2] != None and (state[2] == None or
@@ -65,7 +76,7 @@ print('#Filename .M2')
 print('\nABCDEFGHI t%d\n' % (module.initialtempo * 3 // module.initialspeed))
 
 
-def print_pattern(pattern):
+def print_pattern(pattern, instruments):
     startrow, endrow = 0, -1  # Cxx stuff
     cxx = False
     for channel in range(9):
@@ -83,7 +94,7 @@ def print_pattern(pattern):
                         print('r', end='')
                     print(lenstr(notelen), end=' ')
                 ssg = channel in range(6, 9)
-                print(notestr(cell, chanstate, ssg), end='')
+                print(notestr(cell, chanstate, instruments, ssg), end='')
                 if chanstate[0] == None or not cell[0] & 128:
                     chanstate[0] = cell[0]
                 chanstate[1] = cell[1] or chanstate[1]
@@ -156,4 +167,4 @@ for i, inst in enumerate(module.instruments):
 for order, pattern in enumerate(module.orderlist):
     if pattern < 255:
         print('; order %d, pattern %d' % (order, pattern))
-        print_pattern(module.patterns[pattern])
+        print_pattern(module.patterns[pattern], module.instruments)
