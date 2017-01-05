@@ -26,25 +26,26 @@ def notestr(cell, prevcell, f):
         print(NOTE_NAMES[cell[0] % 16], end='', file=f)
 
 
-def lenstr(notelen):
-    # one row is a 16th note
+def lenstr(notelen, sep='&'):
+    # represent note value with ties of dotted numbers
     lengths = []
-    while notelen >= 16:
-        notelen -= 16
-        lengths.append('1')
-    while notelen >= 8:
-        notelen -= 8
-        lengths.append('2')
-    while notelen >= 4:
-        notelen -= 4
-        lengths.append('4')
-    while notelen >= 2:
-        notelen -= 2
-        lengths.append('8')
-    while notelen >= 1:
-        notelen -= 1
-        lengths.append('16')
-    return '&'.join(lengths)
+    while notelen > 0:
+        length = None
+        # one row is a 16th note
+        for i in (1, 2, 4, 8, 16):
+            if length:
+                if notelen >= 16/i:
+                    length += '.'
+                    notelen -= 16/i
+                else:
+                    break  # can't use . anymore
+            elif notelen >= 16/i:
+                length = str(i)
+                notelen -= 16/i
+                if notelen >= i:
+                    break  # use &1 instead of ....
+        lengths.append(length)
+    return sep.join(lengths)
 
 
 with open(sys.argv[1], 'rb') as f:
