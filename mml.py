@@ -15,7 +15,7 @@ def notestr(cell, state):
     else:
         if cell[1] and cell[1] != state[1]:
             string += '@%d' % cell[1]
-        if cell[2] != None and (state[0] == None or
+        if cell[2] != None and (state[2] == None or
                 int(3.6 * math.log(1 + cell[2])) != \
                         int(3.6 * math.log(1 + state[2]))):
             string += 'v%d' % int(3.6 * math.log(1 + cell[2]))
