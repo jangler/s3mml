@@ -67,7 +67,7 @@ def read_instruments(buf, m):
         inst = Instrument()
         inst.type = struct.unpack_from('B', buf, ptr)[0]
         inst.filename = struct.unpack_from('12s', buf, ptr +
-            1)[0].decode('ascii').strip()
+            1)[0].decode('ascii').strip('\0')
 
         oplvalues = struct.unpack_from('12B', buf, ptr + 16)
         inst.feedback = oplvalues[10] >> 1
@@ -89,7 +89,7 @@ def read_instruments(buf, m):
 
         inst.volume, inst.c2spd = struct.unpack_from('B3xI', buf, ptr + 28)
         inst.title = struct.unpack_from('28s', buf, ptr +
-                36)[0].decode('ascii').strip()
+                36)[0].decode('ascii').strip('\0')
         m.instruments.append(inst)
 
 
