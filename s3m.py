@@ -98,8 +98,7 @@ def read_patterns(buf, m):
     m.patterns = []
     for ptr in m.ptrpatterns:
         pat = []
-        #packedlen = struct.unpack_from('H', buf, ptr)[0]  # unused
-        ptr += 2
+        ptr += 2  # skip packed length bytes
         for i in range(64):
             row = [None for j in range(32)]
             while True:
@@ -128,7 +127,7 @@ def write_song(module, f):
     for pattern in module.patterns:
         for row in pattern:
             for channel in range(len(row)):
-                if row[channel] != None:
+                if row[channel] is not None:
                     numchannels = max(numchannels, channel+1)
 
     # concatenate pattern text to f
@@ -147,24 +146,25 @@ def write_pattern(pattern, numchannels, f):
 
 
 def write_cell(data, f):
-    if data == None:
+    if data is None:
         f.write(b'...----.00')
         return
 
-    if data[0] == None:
+    if data[0] is None:
         f.write(b'...--')
     elif data[0] < 128:
         f.write(('%s%01d%02d' %
-            (NOTE_NAMES[data[0] % 16], data[0]/16 + 1, data[1])).encode('ascii'))
+            (NOTE_NAMES[data[0] % 16], data[0]/16 + 1, data[1]))
+            .encode('ascii'))
     else:
         f.write(b'===--')  # TODO: this could be other things. note cut?
 
-    if data[2] == None:
+    if data[2] is None:
         f.write(b'--')
     else:
         f.write(('%02d' % data[2]).encode('ascii'))
 
-    if data[3] == None:
+    if data[3] is None:
         f.write(b'.00')
     else:
         f.write(('%s%02X' % (chr(64 + data[3]), data[4])).encode('ascii'))

@@ -15,7 +15,7 @@ def linlog(vol, outrange=15):
 def notestr(cell, state, instruments, ssg=False):
     # state is the current channel state, structured like the cell
     string = ''
-    if cell[0] != None and cell[0] & 128:
+    if cell[0] is not None and cell[0] & 128:
         string += 'r'
     else:
         if cell[1] and cell[1] != state[1]:
@@ -33,11 +33,11 @@ def notestr(cell, state, instruments, ssg=False):
                 string += '@%d' % cell[1]
 
         volrange = 15 if ssg else 127
-        if cell[2] != None and (state[2] == None or
+        if cell[2] is not None and (state[2] is None or
                 linlog(cell[2], volrange) != linlog(state[2], volrange)):
             string += 'V%d' % linlog(cell[2], volrange)
 
-        if cell[0] and (state[0] == None or cell[0] // 16 != state[0] // 16):
+        if cell[0] and (state[0] is None or cell[0] // 16 != state[0] // 16):
             string += 'o%d' % (cell[0] // 16 + 1)
         if cell[3] == 7:
             string += '&'  # Gxx
@@ -87,7 +87,7 @@ def print_pattern(pattern, instruments):
         for i, row in enumerate(pattern[startrow:endrow]):
             cell = row[channel]
             if cell and cell[0]:
-                if not cell[0] & 128 and cell[2] == None:
+                if not cell[0] & 128 and cell[2] is None:
                     cell[2] = 64  # blank volume is max volume
                 if notelen != 0:
                     if not any(col for col in chanstate):
@@ -95,10 +95,10 @@ def print_pattern(pattern, instruments):
                     print(lenstr(notelen), end=' ')
                 ssg = channel in range(6, 9)
                 print(notestr(cell, chanstate, instruments, ssg), end='')
-                if chanstate[0] == None or not cell[0] & 128:
+                if chanstate[0] is None or not cell[0] & 128:
                     chanstate[0] = cell[0]
                 chanstate[1] = cell[1] or chanstate[1]
-                chanstate[2] = cell[2] if cell[2] != None else chanstate[2]
+                chanstate[2] = cell[2] if cell[2] is not None else chanstate[2]
                 chanstate[3], chanstate[4] = cell[3], cell[4]
                 notelen = 0
             notelen += 1
@@ -112,7 +112,7 @@ def print_pattern(pattern, instruments):
             if not any(col for col in chanstate):
                 print('r', end='')
             print(lenstr(notelen), end='')
-        print() # newline
+        print()  # newline
     print()  # newline
 
 
@@ -135,8 +135,8 @@ for i, inst in enumerate(module.instruments):
     print('%d %d %d %d %d %d %d %d %d %d' % (
         envcurve(inst.modulator.attack, 31),
         envcurve(inst.modulator.decay, 31),
-        0 if inst.modulator.sustainsound else \
-                envcurve(inst.modulator.release, 31),
+        0 if inst.modulator.sustainsound else
+            envcurve(inst.modulator.release, 31),
         envcurve(inst.modulator.release),
         15 - envcurve(inst.modulator.sustain),
         63 - inst.modulator.volume,
@@ -153,7 +153,7 @@ for i, inst in enumerate(module.instruments):
     print('%d %d %d %d %d %d %d %d %d %d' % (
         envcurve(inst.carrier.attack, 31),
         envcurve(inst.carrier.decay, 31),
-        0 if inst.carrier.sustainsound else \
+        0 if inst.carrier.sustainsound else
                 envcurve(inst.carrier.release, 31),
         envcurve(inst.carrier.release),
         15 - envcurve(inst.carrier.sustain),
