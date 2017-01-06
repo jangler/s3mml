@@ -21,13 +21,13 @@ def notestr(cell, state, instruments, ssg=False):
         if cell[1] and cell[1] != state[1]:
             if ssg:
                 inst = instruments[cell[1]-1].carrier
-                string += 'E%d,%d,%d,%d,%d,%d' % (
+                string += 'E%d,%d,%d,%d,%d' % (
                     envcurve(inst.attack, 31),
                     envcurve(inst.decay, 31),
                     0 if inst.sustainsound else envcurve(inst.release, 31),
                     envcurve(inst.release),
                     15 - envcurve(inst.sustain),
-                    linlog(inst.volume),
+                    # linlog(inst.volume),  # attack level (??)
                 )
             else:
                 string += '@%d' % cell[1]
