@@ -99,6 +99,7 @@ def print_pattern(pattern, instruments, target, f):
 def write(f, module, target):
     target.write_header(module, f)
     for i, inst in enumerate(module.instruments):
+        print('; %s' % inst.title, file=f)
         target.write_inst(i+1, inst, f)
     for order, pattern in enumerate(module.orderlist):
         if pattern < 255:
