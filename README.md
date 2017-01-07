@@ -27,6 +27,8 @@ Some quick notes off the top of my head:
 - ST3 itself handles Gxx on AdLib instruments in a weird way, at least in
   DOSBox. Schism Tracker and Adlib Tracker 2 play Gxx the way you'd normally
   expect.
+- The beginning of a new pattern is always treated as a note-off for every
+  channel.
 - If you find a bug or want a feature, open an issue in the GitHub issue
   tracker or make a pull request. Or like, message me on IRC if that's what you
   normally do.
