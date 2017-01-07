@@ -9,7 +9,7 @@ import s3m
 # parse command-line args
 parser = argparse.ArgumentParser(description="""
 Convert a ScreamTracker 3 module to MML for the target compiler. Currently,
-only AdLib instruments are supported.
+only AdLib instruments are supported, and the only target compiler is PMD.
 """)
 parser.add_argument('target', help='target MML compiler', choices=['pmd'])
 parser.add_argument('infile', help='input S3M file')
