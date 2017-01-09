@@ -5,18 +5,19 @@ Convert ScreamTracker 3 modules to MML targeting specific sound chips.
 
 Usage:
 
-	usage: mk.py [-h] {pmd} infile [outfile]
+    usage: mk.py [-h] {opl2,opna} infile [outfile]
 
-	Convert a ScreamTracker 3 module to MML for the target compiler. Currently,
-	only AdLib instruments are supported, and the only target compiler is PMD.
+    Convert a ScreamTracker 3 module to MML for the target compiler and sound
+    chip. Currently, only AdLib instruments are supported, and the only target
+    compiler is PMD.
 
-	positional arguments:
-	  {pmd}       target MML compiler
-	  infile      input S3M file
-	  outfile     output MML file (default based on infile name)
+    positional arguments:
+      {opl2,opna}  target MML compiler
+      infile       input S3M file
+      outfile      output MML file (default based on infile name)
 
-	optional arguments:
-	  -h, --help  show this help message and exit
+    optional arguments:
+      -h, --help   show this help message and exit
 
 Some quick notes off the top of my head:
 
@@ -33,17 +34,22 @@ Some quick notes off the top of my head:
   tracker or make a pull request. Or like, message me on IRC if that's what you
   normally do.
 
-PMD-specific notes
-------------------
+OPNA-specific notes
+-------------------
 
-PMD (Professional Music Driver) supports multiple sound chips, but this
-converter specifically targets the OPNA.
+This target uses PMD (Professional Music Driver) as the compiler.
 
 - Channels 1-6 are FM, and 7-9 are SSG. The converter does not support any form
   of PCM.
 - Unlike the OPL2, the OPNA can only use sine waves as FM operators.
 - The SSG still supports the envelopes that FM instruments use, but of course
   the timbres will always be square waves.
+
+OPL2-specific notes
+-------------------
+
+This target uses PMD (Professional Music Driver) as the compiler. It's not
+finished!
 
 Links
 -----
