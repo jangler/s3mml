@@ -1,4 +1,4 @@
-# settings for PMD output
+# settings for PMD OPNA output
 
 import math
 

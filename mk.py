@@ -8,10 +8,12 @@ import s3m
 
 # parse command-line args
 parser = argparse.ArgumentParser(description="""
-Convert a ScreamTracker 3 module to MML for the target compiler. Currently,
-only AdLib instruments are supported, and the only target compiler is PMD.
+Convert a ScreamTracker 3 module to MML for the target compiler and sound chip.
+Currently, only AdLib instruments are supported, and the only target compiler
+is PMD.
 """)
-parser.add_argument('target', help='target MML compiler', choices=['pmd'])
+parser.add_argument('target', help='target MML compiler',
+        choices=['opl2', 'opna'])
 parser.add_argument('infile', help='input S3M file')
 parser.add_argument('outfile', nargs='?',
                     help='output MML file (default based on infile name)')
@@ -27,9 +29,10 @@ with open(args.infile, 'rb') as f:
     module = s3m.read(f)
 
 # load target settings
-if args.target == 'pmd':
-    import pmd
-    target = pmd
+if args.target == 'opl2':
+    import opl2 as target
+elif args.target in ('opna', 'pmd'):  # pmd is a legacy name for this
+    import opna as target
 else:
     # this should never happen because of the 'choice' option type
     raise ValueError('invalid target compiler: %s' % args.target)
