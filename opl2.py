@@ -32,7 +32,7 @@ def write_inst(num, inst, f):
     # nm alg fb
     print('@%02d %d %d' % (num, inst.connection, inst.feedback), file=f)
     # ar dr rr sl  tl  ksl ml ksr egt vib am
-    # 15 15 15 -15 -63 3   15 1   ?   1   1
+    # 15 15 15 -15 -63 3   15 1   2   1   1
     print(' %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d' % (
         inst.modulator.attack,
         inst.modulator.decay,
@@ -42,7 +42,7 @@ def write_inst(num, inst, f):
         inst.modulator.levelscaling,
         inst.modulator.freqmult,
         int(inst.modulator.scaleenv),
-        inst.modulator.sustainsound,  # ?
+        inst.modulator.waveselect,
         int(inst.modulator.vibrato),
         int(inst.modulator.tremolo),
     ), file=f)
@@ -55,7 +55,7 @@ def write_inst(num, inst, f):
         inst.carrier.levelscaling,
         inst.carrier.freqmult,
         int(inst.carrier.scaleenv),
-        inst.carrier.sustainsound,  # ?
+        inst.carrier.waveselect,
         int(inst.carrier.vibrato),
         int(inst.carrier.tremolo),
     ), file=f)
