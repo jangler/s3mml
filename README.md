@@ -49,5 +49,6 @@ Links
 -----
 
 - [Scream Tracker 3](http://www.pouet.net/prod.php?which=13351)
+- [OpenMPT](https://openmpt.org/)
 - [Schism Tracker](http://schismtracker.org/)
 - [PMD](http://battleofthebits.org/lyceum/View/Professional+Music+Driver+\(PMD\)/)
